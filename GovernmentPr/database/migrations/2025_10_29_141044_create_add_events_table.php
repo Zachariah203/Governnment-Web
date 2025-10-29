@@ -8,13 +8,11 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('events', function (Blueprint $table) {
-            $table->id('EventID'); // PK, auto-increment
+        Schema::create('add_events', function (Blueprint $table) {
+            $table->id('EventID'); // Primary key, auto-increment (matches model)
             $table->unsignedBigInteger('categoryID')->nullable()->index(); // Optional FK
             $table->string('Event', 255); // Maps to form 'title'
             $table->string('UrlName', 255)->nullable(); // Maps to form 'url'
@@ -31,11 +29,9 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('events');
+        Schema::dropIfExists('add_events');
     }
 };

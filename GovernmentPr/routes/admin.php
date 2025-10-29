@@ -509,18 +509,31 @@ Route::prefix('admin')->middleware('auth:admin')->group(function() {
     });
 
     // Events
-    Route::controller(EventController::class)->group(function() {
-        Route::get ('/cms-events', 'index')->name('CMS.event');
-    });
-    Route::controller(AddEventController::class)->group(function() {
-        Route::get ('/create-events', 'index')->name('CMS.add-event');
-    });
+Route::controller(EventController::class)->group(function() {
+    Route::get('/cms-events', 'index')->name('CMS.event');
+});
+Route::get('/cms-events', [EventController::class, 'index'])->name('CMS.event');
 
-    // General Settings
-    Route::controller(generalSetting::class)->group(function() {
-        Route::get('/general-setting', 'create')->name('admin.general-setting');
-        Route::post('/register-settings', 'store')->name('admin.store-settings');
-    });
+// Create (GET form)
+Route::get('/create-events', [AddEventController::class, 'index'])->name('CMS.add-event');
+
+// Store (POST create)
+Route::post('/create-events', [AddEventController::class, 'store'])->name('CMS.store-event');
+
+// Edit (GET form)
+Route::get('/events/{event}/edit', [AddEventController::class, 'edit'])->name('CMS.edit-event');
+
+// Update (PUT update)
+Route::put('/events/{event}', [AddEventController::class, 'update'])->name('CMS.update-event');
+
+// Delete
+Route::delete('/events/{event}', [AddEventController::class, 'destroy'])->name('CMS.delete-event');
+
+// General Settings
+Route::controller(generalSetting::class)->group(function() {
+    Route::get('/general-setting', 'create')->name('admin.general-setting');
+    Route::post('/register-settings', 'store')->name('admin.store-settings');
+});
 
     // Guards
     Route::controller(GuardsController::class)->group(function() {
@@ -761,6 +774,24 @@ Route::prefix('admin')->middleware('auth:admin')->group(function() {
         Route::put('/tags/{id}', 'update')->name('admin.update-tag');
         Route::delete('/tags/{id}', 'destroy')->name('admin.delete-tag');
     });
+    Route::prefix('admin')->middleware('auth:admin')->group(function() {
+        // Events & News (CMS)
+        Route::controller(EventController::class)->group(function() {
+            Route::get('/cms-events', 'index')->name('CMS.event');
+        });
+
+        Route::controller(AddEventController::class)->group(function() {
+            Route::get('/create-events', 'index')->name('CMS.add-event');
+            Route::post('/create-events', 'store')->name('CMS.store-event');
+            Route::get('/events/{event}/edit', 'edit')->name('CMS.edit-event');
+            Route::put('/events/{event}', 'update')->name('CMS.update-event');
+            Route::delete('/events/{event}', 'destroy')->name('CMS.delete-event');
+        });
+    });
+
+
+     });
+  
 
     // waste category
     Route::controller(WasteCategoryController::class)->group(function() {
@@ -827,4 +858,4 @@ Route::prefix('admin')->middleware('auth:admin')->group(function() {
     Route::get('/notifications/{id}', [ViewEmailController::class, 'show'])->name('notifications.show');
     Route::get('/show-email/{email}', [ViewEmailController::class, 'index'])->name('admin.show-email');
     
-});
+;
