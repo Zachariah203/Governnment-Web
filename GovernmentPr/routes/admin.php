@@ -239,8 +239,20 @@ Route::prefix('admin')->middleware('auth:admin')->group(function() {
     }); 
 
     Route::controller(CompanyChemicalController::class)->group(function() {
+        // Add / Update chemical
         Route::post('/save-company-chemical', 'store_company_chemical')->name('admin.store-company-chemical');
+
+        // View chemical
         Route::get('/chemical-view/{chemical}', 'show')->name('admin.view-chemical');
+
+        // Delete chemical
+        Route::post('/delete-company-chemical/{chemical}', 'delete_company_chemical')->name('admin.delete-company-chemical');
+
+        // Check-in chemical
+        Route::post('/save-company-chemical-check-in', 'save_check_in')->name('admin.save-company-chemical-check-in');
+
+        // Check-out chemical
+        Route::post('/save-company-chemical-check-out', 'save_check_out')->name('admin.save-company-chemical-check-out');
     });
 
     // company users
@@ -470,12 +482,12 @@ Route::prefix('admin')->middleware('auth:admin')->group(function() {
 
     // Company Employee
     Route::controller(CompanyEmployeesController::class)->group(function() {
-        Route::get('/company-employees', 'index')->name('admin.company-employees');
+        Route::get('/company-employees/{company}', 'index')->name('admin.company-employees');
         Route::get('/search-employee', 'search')->name('admin.search-employee');
-        Route::post('/company-employees/store', 'store')->name('admin.store-company-employee');
+        Route::post('/company-employees/{company}/store', 'store')->name('admin.store-company-employee');
         Route::get('/company-employees/{id}', 'show')->name('admin.show-company-employee');
-        Route::put('/company-employees/{id}', 'update')->name('admin.update-company-employee');
-        Route::delete('/company-employees/{id}', 'destroy')->name('admin.delete-company-employee');
+        Route::put('/company-employees/{employee}', 'update')->name('admin.update-company-employee');
+        Route::delete('/company-employees/{employee}', 'destroy')->name('admin.delete-company-employee');
     });
 
     // Company Material

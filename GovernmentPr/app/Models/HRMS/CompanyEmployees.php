@@ -21,7 +21,7 @@ class CompanyEmployees extends Model
         'Gender',
         'JobTitle',
         'DepartmentID',
-        'ManagerID',
+        // 'ManagerID',
         'HireDate',
         'Status',
         'Address',
@@ -35,6 +35,8 @@ class CompanyEmployees extends Model
         'EmployeeNumber',
         'password',
         'LastLogin',
+        'is_delete',
+        'deleted_at'
     ];
 
     protected $hidden = [
@@ -53,10 +55,10 @@ class CompanyEmployees extends Model
     {
         return $this->belongsTo(CompanyDepartment::class, 'DepartmentID', 'DepartmentID');
     }
-    public function manager()
-    {
-        return $this->belongsTo(CompanyEmployees::class, 'ManagerID', 'EmployeeID');
-    }
+    // public function manager()
+    // {
+    //     return $this->belongsTo(CompanyEmployees::class, 'ManagerID', 'EmployeeID');
+    // }
     public function trainings()
     {
         return $this->hasMany(CompanyTraining::class, 'EmployeeID', 'EmployeeID');

@@ -67,6 +67,7 @@ class CompanyDepartmentController extends Controller
                 'DepartmentID' => $department->DepartmentID,
                 'DepartmentName' => $department->DepartmentName,
                 'managers' => $managers,
+                'status' => $department->Status,
             ];
             });
 

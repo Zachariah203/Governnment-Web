@@ -95,8 +95,74 @@ class PageController extends Controller
             }
         }
         
+        // Process dynamic content for FAQ and other templates
+        $dynamicContent = $this->processDynamicContent($page);
+        
         $view = view()->exists("components.templates.$page->template") ? "components.templates.$page->template" : "components.templates.default";
-        return view($view, compact('page', 'sliderImages'));
+        return view($view, compact('page', 'sliderImages', 'dynamicContent'));
+    }
+
+    /**
+     * Process dynamic content for templates
+     */
+    private function processDynamicContent($page)
+    {
+        $content = [
+            'faq_data' => [],
+            'tables' => [],
+            'surveys' => [],
+            'processed_body' => $page->body
+        ];
+
+        // Process FAQ data from various sources
+        if (!empty($page->dynamic_tables) && is_array($page->dynamic_tables)) {
+            $content['faq_data'] = $this->normalizeFaqData($page->dynamic_tables);
+            $content['tables'] = $page->dynamic_tables;
+        }
+
+        if (!empty($page->polls_surveys) && is_array($page->polls_surveys)) {
+            $content['surveys'] = $page->polls_surveys;
+            if (empty($content['faq_data'])) {
+                $content['faq_data'] = $this->normalizeFaqData($page->polls_surveys);
+            }
+        }
+
+        return $content;
+    }
+
+    /**
+     * Normalize FAQ data structure
+     */
+    private function normalizeFaqData($data)
+    {
+        $normalized = [];
+        
+        foreach ($data as $key => $category) {
+            if (is_array($category)) {
+                $normalizedCategory = [
+                    'category' => $category['category'] ?? $category['name'] ?? $category['title'] ?? "Category " . ($key + 1),
+                    'icon' => $category['icon'] ?? 'fa-solid fa-folder',
+                    'questions' => []
+                ];
+                
+                $questions = $category['questions'] ?? $category['items'] ?? $category['faqs'] ?? [];
+                
+                if (is_array($questions)) {
+                    foreach ($questions as $question) {
+                        if (is_array($question) && isset($question['question']) && isset($question['answer'])) {
+                            $normalizedCategory['questions'][] = [
+                                'question' => $question['question'] ?? $question['title'] ?? '',
+                                'answer' => $question['answer'] ?? $question['content'] ?? $question['description'] ?? ''
+                            ];
+                        }
+                    }
+                }
+                
+                $normalized[] = $normalizedCategory;
+            }
+        }
+        
+        return $normalized;
     }
 
     /**
@@ -433,6 +499,78 @@ class PageController extends Controller
             'about'   => 'About Page',
             'faq'     => 'FAQ Page'
         ];
+    }
+
+    /**
+     * Get sample FAQ data structure for reference
+     */
+    public function getSampleFaqData()
+    {
+        return [
+            [
+                'category' => 'General Information',
+                'icon' => 'fa-solid fa-info-circle',
+                'questions' => [
+                    [
+                        'question' => 'What services do you offer?',
+                        'answer' => 'We offer a comprehensive range of services designed to meet your needs.'
+                    ],
+                    [
+                        'question' => 'How can I contact customer support?',
+                        'answer' => 'You can reach our customer support team through multiple channels: email, phone, or live chat.'
+                    ]
+                ]
+            ],
+            [
+                'category' => 'Services & Pricing',
+                'icon' => 'fa-solid fa-dollar-sign',
+                'questions' => [
+                    [
+                        'question' => 'What is your pricing structure?',
+                        'answer' => 'Our pricing is competitive and transparent. We offer flexible packages to suit different budgets.'
+                    ],
+                    [
+                        'question' => 'Do you offer refunds?',
+                        'answer' => 'Yes, we have a comprehensive refund policy. You may be eligible for a refund within 30 days.'
+                    ]
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * API endpoint to get sample FAQ data (for admin interface)
+     */
+    public function getFaqSample()
+    {
+        return response()->json([
+            'sample_data' => $this->getSampleFaqData(),
+            'instructions' => [
+                'Store this data in the "dynamic_tables" field of your page',
+                'Each category should have a "category", "icon", and "questions" array',
+                'Each question should have a "question" and "answer" field',
+                'Icons should use FontAwesome classes (e.g., "fa-solid fa-info-circle")'
+            ]
+        ]);
+    }
+
+    /**
+     * Update page with sample FAQ data (for testing)
+     */
+    public function populateSampleFaq(Page $page)
+    {
+        $sampleData = $this->getSampleFaqData();
+        
+        $page->update([
+            'dynamic_tables' => $sampleData,
+            'template' => 'faq'
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Sample FAQ data has been added to the page',
+            'data' => $sampleData
+        ]);
     }
 
 }

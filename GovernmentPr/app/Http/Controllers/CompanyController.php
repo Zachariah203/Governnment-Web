@@ -173,6 +173,20 @@ class CompanyController extends WaterStockMovementController
         $data['maintenances'] = [];
         $data['batches'] = [];
         $data['annualPlans'] = [];
+        $data['chemicalUsage'] = [];
+        $data['years'] = [];
+        $data['transportRecords'] = [];
+        $data['topVehicles'] = [];
+        $data['supplyChain'] = [];
+        $data['inspections'] = [];
+        $data['defects'] = [];
+        $data['actions'] = [];
+        $data['batchWastes'] = [];
+        $data['disposals'] = [];
+        $data['wasteCategories'] = [];
+        $data['wasteSubCategories'] = [];
+        $data['reportData'] = [];
+        $data['processes'] = [];
 
 
         return view('components.apps.companyProfile', $data);

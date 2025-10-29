@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('DepartmentName', 100);
             $table->json('ManagerIDs')->nullable();
             $table->unsignedBigInteger('CompanyID');
+            $table->enum('Status', ['Active', 'Inactive'])->default('Active');
             $table->timestamps();
             $table->foreign('CompanyID')->references('CompanyID')->on('companies');
             // $table->foreign('ManagerID')->references('EmployeeID')->on('company_employees');
