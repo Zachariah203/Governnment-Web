@@ -124,11 +124,15 @@ Route::prefix('admin')->middleware('auth:admin')->group(function() {
     
 
     // settings
-    Route::controller(generalSetting::class)->group(function() {
-        Route::get('/general-setting', 'create')->name('admin.general-setting');
-        Route::post ('/register-settings', 'store')->name('admin.store-settings');
-    });
 
+    Route::prefix('admin')->middleware('auth:admin')->group(function () {
+    Route::controller(generalSetting::class)->group(function () {
+        Route::get('/general-setting', 'create')->name('components.admin.settings.general-setting');
+        Route::post('/register-settings', 'store')->name('components.admin.settings.store');
+    });
+});
+
+   
     // Guards
     Route::controller(GuardsController::class)->group(function() {
         Route::get('/guards', 'index')->name('admin.guards');
